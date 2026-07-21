@@ -2,15 +2,11 @@ import requests
 import time
 import json
 from datetime import datetime
+from telemetry_collector import build_snapshot
 
 # ── Config ────────────────────────────────────────────────────────
 PROMETHEUS_URL = "http://localhost:9090"
 POLL_INTERVAL  = 30  # seconds
-THRESHOLDS = {
-    "cpu":     0.80,  # 80% CPU usage
-    "memory":  0.80,  # 80% memory usage
-    "restarts": 3,    # pod restart count
-}
 
 # ── Prometheus query helper ───────────────────────────────────────
 def query(promql):
@@ -35,8 +31,8 @@ def detect_pod_restarts():
     )
     anomalies = []
     for r in results:
-        pod  = r["metric"].get("pod", "unknown")
-        val  = float(r["value"][1])
+        pod = r["metric"].get("pod", "unknown")
+        val = float(r["value"][1])
         anomalies.append({
             "type":     "POD_RESTART",
             "service":  pod,
@@ -102,12 +98,47 @@ def detect_pod_crashes():
         })
     return anomalies
 
+# ── Handle anomaly ────────────────────────────────────────────────
+def handle_anomaly(anomaly):
+    timestamp = datetime.now().strftime("%Y-%m-%d %H:%M:%S")
+    anomaly["timestamp"] = timestamp
+
+    # Print alert
+    print(f"\n  🚨 ANOMALY DETECTED")
+    print(f"     Type     : {anomaly['type']}")
+    print(f"     Service  : {anomaly['service']}")
+    print(f"     Severity : {anomaly['severity']}")
+    print(f"     Message  : {anomaly['message']}")
+
+    # Save anomaly event
+    with open("anomaly_events.json", "a") as f:
+        f.write(json.dumps(anomaly) + "\n")
+
+    # Trigger telemetry collector
+    print(f"\n  📡 Collecting telemetry snapshot for {anomaly['service']}...")
+    snapshot = build_snapshot(anomaly_event=anomaly)
+
+    # Save snapshot with timestamp in filename
+    filename = f"snapshot_{anomaly['type']}_{timestamp.replace(' ', '_').replace(':', '-')}.json"
+    with open(filename, "w") as f:
+        json.dump(snapshot, f, indent=2)
+
+    print(f"  💾 Snapshot saved to {filename}")
+    print(f"  ⏳ Waiting for LLM agent to process...\n")
+
+    # Save latest snapshot for LLM agent to always read
+    with open("latest_snapshot.json", "w") as f:
+        json.dump(snapshot, f, indent=2)
+
 # ── Main loop ─────────────────────────────────────────────────────
 def run():
     print("=" * 55)
     print("  AutoSRE Anomaly Detector — Started")
     print(f"  Polling Prometheus every {POLL_INTERVAL}s")
     print("=" * 55)
+
+    # Track seen anomalies to avoid duplicate triggers
+    seen = set()
 
     while True:
         timestamp = datetime.now().strftime("%Y-%m-%d %H:%M:%S")
@@ -122,18 +153,16 @@ def run():
 
         if not all_anomalies:
             print("  ✓ All systems healthy — no anomalies detected")
+            seen.clear()  # reset when cluster is healthy
         else:
             for anomaly in all_anomalies:
-                print(f"\n  🚨 ANOMALY DETECTED")
-                print(f"     Type     : {anomaly['type']}")
-                print(f"     Service  : {anomaly['service']}")
-                print(f"     Severity : {anomaly['severity']}")
-                print(f"     Message  : {anomaly['message']}")
-
-                # Save to file for the LLM agent to read
-                with open("anomaly_events.json", "a") as f:
-                    anomaly["timestamp"] = timestamp
-                    f.write(json.dumps(anomaly) + "\n")
+                # Deduplicate — don't re-trigger same anomaly every 30s
+                key = f"{anomaly['type']}_{anomaly['service']}"
+                if key not in seen:
+                    seen.add(key)
+                    handle_anomaly(anomaly)
+                else:
+                    print(f"  ⚠ Ongoing: {anomaly['type']} on {anomaly['service']} (already triggered)")
 
         time.sleep(POLL_INTERVAL)
 
