@@ -1,0 +1,4 @@
+{"type": "CRASH_LOOP", "service": "crasher", "value": 1, "message": "Pod crasher is in CrashLoopBackOff", "severity": "CRITICAL", "timestamp": "2026-07-21 21:38:53"}
+{"type": "CRASH_LOOP", "service": "crasher", "value": 1, "message": "Pod crasher is in CrashLoopBackOff", "severity": "CRITICAL", "timestamp": "2026-07-21 21:39:23"}
+{"type": "CRASH_LOOP", "service": "crasher", "value": 1, "message": "Pod crasher is in CrashLoopBackOff", "severity": "CRITICAL", "timestamp": "2026-07-21 21:39:53"}
+{"type": "POD_RESTART", "service": "crasher", "value": 4.0, "message": "Pod crasher has restarted 4 times", "severity": "HIGH", "timestamp": "2026-07-21 21:40:23"}
