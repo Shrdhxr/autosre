@@ -1,6 +1,20 @@
-{"type": "CRASH_LOOP", "service": "crasher", "value": 1, "message": "Pod crasher is in CrashLoopBackOff", "severity": "CRITICAL", "timestamp": "2026-07-21 21:38:53"}
-{"type": "CRASH_LOOP", "service": "crasher", "value": 1, "message": "Pod crasher is in CrashLoopBackOff", "severity": "CRITICAL", "timestamp": "2026-07-21 21:39:23"}
-{"type": "CRASH_LOOP", "service": "crasher", "value": 1, "message": "Pod crasher is in CrashLoopBackOff", "severity": "CRITICAL", "timestamp": "2026-07-21 21:39:53"}
-{"type": "POD_RESTART", "service": "crasher", "value": 4.0, "message": "Pod crasher has restarted 4 times", "severity": "HIGH", "timestamp": "2026-07-21 21:40:23"}
-{"type": "CRASH_LOOP", "service": "crasher", "value": 1, "message": "Pod crasher is in CrashLoopBackOff", "severity": "CRITICAL", "timestamp": "2026-07-21 22:14:01"}
-{"type": "POD_RESTART", "service": "crasher", "value": 4.0, "message": "Pod crasher has restarted 4 times", "severity": "HIGH", "timestamp": "2026-07-21 22:14:31"}
+{"type": "POD_RESTART", "service": "loadgenerator-5779599b7d-7khjv", "value": 4.0, "message": "Pod loadgenerator-5779599b7d-7khjv has restarted 4 times", "severity": "HIGH", "timestamp": "2026-07-23 15:24:33"}
+{"type": "POD_RESTART", "service": "paymentservice-76db4cc7fb-wbkgw", "value": 4.0, "message": "Pod paymentservice-76db4cc7fb-wbkgw has restarted 4 times", "severity": "HIGH", "timestamp": "2026-07-23 15:24:33"}
+{"type": "POD_RESTART", "service": "redis-cart-7ff8f4d6ff-r2gcc", "value": 4.0, "message": "Pod redis-cart-7ff8f4d6ff-r2gcc has restarted 4 times", "severity": "HIGH", "timestamp": "2026-07-23 15:24:33"}
+{"type": "POD_RESTART", "service": "adservice-694f4485b6-zrj69", "value": 4.0, "message": "Pod adservice-694f4485b6-zrj69 has restarted 4 times", "severity": "HIGH", "timestamp": "2026-07-23 15:24:33"}
+{"type": "POD_RESTART", "service": "checkoutservice-5dfb9685bb-r4q8l", "value": 4.0, "message": "Pod checkoutservice-5dfb9685bb-r4q8l has restarted 4 times", "severity": "HIGH", "timestamp": "2026-07-23 15:24:33"}
+{"type": "POD_RESTART", "service": "shippingservice-6df4d977f6-69gjw", "value": 4.0, "message": "Pod shippingservice-6df4d977f6-69gjw has restarted 4 times", "severity": "HIGH", "timestamp": "2026-07-23 15:24:33"}
+{"type": "POD_RESTART", "service": "productcatalogservice-5b94cd5776-wz2bv", "value": 4.0, "message": "Pod productcatalogservice-5b94cd5776-wz2bv has restarted 4 times", "severity": "HIGH", "timestamp": "2026-07-23 15:24:33"}
+{"type": "POD_RESTART", "service": "cartservice-5779b4b5f-6lc5p", "value": 4.0, "message": "Pod cartservice-5779b4b5f-6lc5p has restarted 4 times", "severity": "HIGH", "timestamp": "2026-07-23 15:24:33"}
+{"type": "POD_RESTART", "service": "currencyservice-74cd85cd6-dx87f", "value": 4.0, "message": "Pod currencyservice-74cd85cd6-dx87f has restarted 4 times", "severity": "HIGH", "timestamp": "2026-07-23 15:24:33"}
+{"type": "POD_RESTART", "service": "frontend-5d77f9d6d7-t25dk", "value": 4.0, "message": "Pod frontend-5d77f9d6d7-t25dk has restarted 4 times", "severity": "HIGH", "timestamp": "2026-07-23 15:24:33"}
+{"type": "POD_RESTART", "service": "crasher", "value": 2.4575790912424575, "message": "Pod crasher has restarted 2 times", "severity": "HIGH", "timestamp": "2026-07-23 15:33:36"}
+{"type": "CRASH_LOOP", "service": "crasher", "value": 1, "message": "Pod crasher is in CrashLoopBackOff", "severity": "CRITICAL", "timestamp": "2026-07-23 15:34:06"}
+{"type": "POD_RESTART", "service": "crasher", "value": 1.1112098853231396, "message": "Pod crasher has restarted 1 times", "severity": "HIGH", "timestamp": "2026-07-23 15:45:03"}
+{"type": "CRASH_LOOP", "service": "crasher", "value": 1, "message": "Pod crasher is in CrashLoopBackOff", "severity": "CRITICAL", "timestamp": "2026-07-23 15:45:03"}
+{"type": "POD_RESTART", "service": "crasher", "value": 1.1112098853231398, "message": "Pod crasher has restarted 1 times", "severity": "HIGH", "timestamp": "2026-07-23 15:48:56"}
+{"type": "CRASH_LOOP", "service": "crasher", "value": 1, "message": "Pod crasher is in CrashLoopBackOff", "severity": "CRITICAL", "timestamp": "2026-07-23 15:48:56"}
+{"type": "POD_RESTART", "service": "crasher", "value": 1.1112098853231398, "message": "Pod crasher has restarted 1 times", "severity": "HIGH", "timestamp": "2026-07-23 15:51:15"}
+{"type": "CRASH_LOOP", "service": "crasher", "value": 1, "message": "Pod crasher is in CrashLoopBackOff", "severity": "CRITICAL", "timestamp": "2026-07-23 15:51:15"}
+{"type": "POD_RESTART", "service": "crasher", "value": 1.095436352498979, "message": "Pod crasher has restarted 1 times", "severity": "HIGH", "timestamp": "2026-07-23 15:51:52"}
+{"type": "POD_RESTART", "service": "crasher", "value": 1.1423496115276286, "message": "Pod crasher has restarted 1 times", "severity": "HIGH", "timestamp": "2026-07-23 15:52:15"}

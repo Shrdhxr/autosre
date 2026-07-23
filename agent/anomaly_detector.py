@@ -27,7 +27,7 @@ def query(promql):
 # ── Detection functions ───────────────────────────────────────────
 def detect_pod_restarts():
     results = query(
-        'kube_pod_container_status_restarts_total{namespace="default"} > 3'
+        'increase(kube_pod_container_status_restarts_total{namespace="default"}[5m]) > 0'
     )
     anomalies = []
     for r in results:
