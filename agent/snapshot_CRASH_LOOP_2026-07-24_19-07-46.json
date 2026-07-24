@@ -1,13 +1,13 @@
 {
-  "timestamp": "2026-07-24T19:08:16.646098",
+  "timestamp": "2026-07-24T19:07:46.442937",
   "namespace": "default",
   "anomaly_event": {
-    "type": "POD_RESTART",
+    "type": "CRASH_LOOP",
     "service": "autosre-fixture-crash-loop-67c78bc4ff-6896m",
-    "value": 2.243115289724612,
-    "message": "Pod autosre-fixture-crash-loop-67c78bc4ff-6896m has restarted 2 times",
-    "severity": "HIGH",
-    "timestamp": "2026-07-24 19:08:16"
+    "value": 1,
+    "message": "Pod autosre-fixture-crash-loop-67c78bc4ff-6896m is in CrashLoopBackOff",
+    "severity": "CRITICAL",
+    "timestamp": "2026-07-24 19:07:46"
   },
   "metrics": {
     "cpu_usage": [
@@ -17,7 +17,7 @@
       },
       {
         "pod": "shippingservice-6df4d977f6-69gjw",
-        "cpu_cores": 0.0018
+        "cpu_cores": 0.0019
       },
       {
         "pod": "recommendationservice-7d8b8cc57b-srfd7",
@@ -25,11 +25,11 @@
       },
       {
         "pod": "cartservice-5779b4b5f-6lc5p",
-        "cpu_cores": 0.0087
+        "cpu_cores": 0.0089
       },
       {
         "pod": "paymentservice-76db4cc7fb-wbkgw",
-        "cpu_cores": 0.0022
+        "cpu_cores": 0.0018
       },
       {
         "pod": "frontend-5d77f9d6d7-t25dk",
@@ -37,15 +37,15 @@
       },
       {
         "pod": "currencyservice-74cd85cd6-dx87f",
-        "cpu_cores": 0.016
+        "cpu_cores": 0.0154
       },
       {
         "pod": "adservice-694f4485b6-zrj69",
-        "cpu_cores": 0.0055
+        "cpu_cores": 0.0056
       },
       {
         "pod": "productcatalogservice-5b94cd5776-wz2bv",
-        "cpu_cores": 0.0128
+        "cpu_cores": 0.0127
       },
       {
         "pod": "emailservice-59fd5866d7-857pq",
@@ -67,11 +67,11 @@
       },
       {
         "pod": "shippingservice-6df4d977f6-69gjw",
-        "memory_mb": 6.79
+        "memory_mb": 7.22
       },
       {
         "pod": "recommendationservice-7d8b8cc57b-srfd7",
-        "memory_mb": 32.1
+        "memory_mb": 32.85
       },
       {
         "pod": "cartservice-5779b4b5f-6lc5p",
@@ -79,23 +79,23 @@
       },
       {
         "pod": "paymentservice-76db4cc7fb-wbkgw",
-        "memory_mb": 26.45
+        "memory_mb": 25.93
       },
       {
         "pod": "frontend-5d77f9d6d7-t25dk",
-        "memory_mb": 11.56
+        "memory_mb": 10.87
       },
       {
         "pod": "currencyservice-74cd85cd6-dx87f",
-        "memory_mb": 34.79
+        "memory_mb": 34.62
       },
       {
         "pod": "adservice-694f4485b6-zrj69",
-        "memory_mb": 97.82
+        "memory_mb": 97.91
       },
       {
         "pod": "productcatalogservice-5b94cd5776-wz2bv",
-        "memory_mb": 9.27
+        "memory_mb": 8.77
       },
       {
         "pod": "emailservice-59fd5866d7-857pq",
@@ -107,7 +107,7 @@
       },
       {
         "pod": "loadgenerator-5779599b7d-7khjv",
-        "memory_mb": 48.63
+        "memory_mb": 48.59
       }
     ],
     "restart_counts": [
@@ -161,11 +161,11 @@
       },
       {
         "pod": "autosre-fixture-oom-kill-5c65c595bf-d9qlq",
-        "restarts": 6
+        "restarts": 5
       },
       {
         "pod": "autosre-fixture-crash-loop-67c78bc4ff-6896m",
-        "restarts": 2
+        "restarts": 1
       }
     ],
     "pod_statuses": [
@@ -228,15 +228,14 @@
     ],
     "crash_loop_pods": [
       {
+        "pod": "autosre-fixture-oom-kill-5c65c595bf-d9qlq"
+      },
+      {
         "pod": "autosre-fixture-crash-loop-67c78bc4ff-6896m"
       }
     ]
   },
   "recent_errors": [
-    {
-      "timestamp": "1784920082348635624",
-      "line": "error: fatal simulated crash on startup"
-    },
     {
       "timestamp": "1784920051763503024",
       "line": "error: fatal simulated crash on startup"
@@ -301,11 +300,11 @@
     },
     {
       "pod": "autosre-fixture-oom-kill-5c65c595bf-d9qlq",
-      "restarts": 6
+      "restarts": 5
     },
     {
       "pod": "autosre-fixture-crash-loop-67c78bc4ff-6896m",
-      "restarts": 2
+      "restarts": 1
     }
   ]
 }

@@ -1,113 +1,113 @@
 {
-  "timestamp": "2026-07-24T19:08:16.646098",
+  "timestamp": "2026-07-24T19:03:45.923090",
   "namespace": "default",
   "anomaly_event": {
-    "type": "POD_RESTART",
-    "service": "autosre-fixture-crash-loop-67c78bc4ff-6896m",
-    "value": 2.243115289724612,
-    "message": "Pod autosre-fixture-crash-loop-67c78bc4ff-6896m has restarted 2 times",
-    "severity": "HIGH",
-    "timestamp": "2026-07-24 19:08:16"
+    "type": "CRASH_LOOP",
+    "service": "autosre-fixture-oom-kill-5c65c595bf-d9qlq",
+    "value": 1,
+    "message": "Pod autosre-fixture-oom-kill-5c65c595bf-d9qlq is in CrashLoopBackOff",
+    "severity": "CRITICAL",
+    "timestamp": "2026-07-24 19:03:45"
   },
   "metrics": {
     "cpu_usage": [
       {
         "pod": "redis-cart-7ff8f4d6ff-r2gcc",
-        "cpu_cores": 0.0039
+        "cpu_cores": 0.0035
       },
       {
         "pod": "shippingservice-6df4d977f6-69gjw",
-        "cpu_cores": 0.0018
+        "cpu_cores": 0.0017
       },
       {
         "pod": "recommendationservice-7d8b8cc57b-srfd7",
-        "cpu_cores": 0.0123
+        "cpu_cores": 0.012
       },
       {
         "pod": "cartservice-5779b4b5f-6lc5p",
-        "cpu_cores": 0.0087
+        "cpu_cores": 0.0083
       },
       {
         "pod": "paymentservice-76db4cc7fb-wbkgw",
-        "cpu_cores": 0.0022
-      },
-      {
-        "pod": "frontend-5d77f9d6d7-t25dk",
-        "cpu_cores": 0.0283
-      },
-      {
-        "pod": "currencyservice-74cd85cd6-dx87f",
-        "cpu_cores": 0.016
-      },
-      {
-        "pod": "adservice-694f4485b6-zrj69",
-        "cpu_cores": 0.0055
-      },
-      {
-        "pod": "productcatalogservice-5b94cd5776-wz2bv",
-        "cpu_cores": 0.0128
-      },
-      {
-        "pod": "emailservice-59fd5866d7-857pq",
-        "cpu_cores": 0.0045
-      },
-      {
-        "pod": "checkoutservice-5dfb9685bb-r4q8l",
         "cpu_cores": 0.0016
       },
       {
+        "pod": "frontend-5d77f9d6d7-t25dk",
+        "cpu_cores": 0.026
+      },
+      {
+        "pod": "currencyservice-74cd85cd6-dx87f",
+        "cpu_cores": 0.0143
+      },
+      {
+        "pod": "adservice-694f4485b6-zrj69",
+        "cpu_cores": 0.0069
+      },
+      {
+        "pod": "productcatalogservice-5b94cd5776-wz2bv",
+        "cpu_cores": 0.012
+      },
+      {
+        "pod": "emailservice-59fd5866d7-857pq",
+        "cpu_cores": 0.0047
+      },
+      {
+        "pod": "checkoutservice-5dfb9685bb-r4q8l",
+        "cpu_cores": 0.0017
+      },
+      {
         "pod": "loadgenerator-5779599b7d-7khjv",
-        "cpu_cores": 0.0062
+        "cpu_cores": 0.0058
       }
     ],
     "memory_usage": [
       {
         "pod": "redis-cart-7ff8f4d6ff-r2gcc",
-        "memory_mb": 8.6
+        "memory_mb": 9.1
       },
       {
         "pod": "shippingservice-6df4d977f6-69gjw",
-        "memory_mb": 6.79
+        "memory_mb": 7.41
       },
       {
         "pod": "recommendationservice-7d8b8cc57b-srfd7",
-        "memory_mb": 32.1
+        "memory_mb": 33.09
       },
       {
         "pod": "cartservice-5779b4b5f-6lc5p",
-        "memory_mb": 49.02
+        "memory_mb": 48.41
       },
       {
         "pod": "paymentservice-76db4cc7fb-wbkgw",
-        "memory_mb": 26.45
+        "memory_mb": 25.45
       },
       {
         "pod": "frontend-5d77f9d6d7-t25dk",
-        "memory_mb": 11.56
+        "memory_mb": 10.54
       },
       {
         "pod": "currencyservice-74cd85cd6-dx87f",
-        "memory_mb": 34.79
+        "memory_mb": 34.52
       },
       {
         "pod": "adservice-694f4485b6-zrj69",
-        "memory_mb": 97.82
+        "memory_mb": 98.02
       },
       {
         "pod": "productcatalogservice-5b94cd5776-wz2bv",
-        "memory_mb": 9.27
+        "memory_mb": 8.82
       },
       {
         "pod": "emailservice-59fd5866d7-857pq",
-        "memory_mb": 37.32
+        "memory_mb": 37.57
       },
       {
         "pod": "checkoutservice-5dfb9685bb-r4q8l",
-        "memory_mb": 6.75
+        "memory_mb": 6.88
       },
       {
         "pod": "loadgenerator-5779599b7d-7khjv",
-        "memory_mb": 48.63
+        "memory_mb": 48.03
       }
     ],
     "restart_counts": [
@@ -161,11 +161,7 @@
       },
       {
         "pod": "autosre-fixture-oom-kill-5c65c595bf-d9qlq",
-        "restarts": 6
-      },
-      {
-        "pod": "autosre-fixture-crash-loop-67c78bc4ff-6896m",
-        "restarts": 2
+        "restarts": 3
       }
     ],
     "pod_statuses": [
@@ -220,34 +216,74 @@
       {
         "pod": "autosre-fixture-oom-kill-5c65c595bf-d9qlq",
         "phase": "Running"
-      },
-      {
-        "pod": "autosre-fixture-crash-loop-67c78bc4ff-6896m",
-        "phase": "Running"
       }
     ],
     "crash_loop_pods": [
       {
-        "pod": "autosre-fixture-crash-loop-67c78bc4ff-6896m"
+        "pod": "autosre-fixture-oom-kill-5c65c595bf-d9qlq"
       }
     ]
   },
   "recent_errors": [
     {
-      "timestamp": "1784920082348635624",
-      "line": "error: fatal simulated crash on startup"
+      "timestamp": "1784919809358555347",
+      "line": "error: memory allocation growing, risk of OOM"
     },
     {
-      "timestamp": "1784920051763503024",
-      "line": "error: fatal simulated crash on startup"
+      "timestamp": "1784919809148954055",
+      "line": "error: memory allocation growing, risk of OOM"
     },
     {
-      "timestamp": "1784920033066765520",
-      "line": "error: fatal simulated crash on startup"
+      "timestamp": "1784919808942984020",
+      "line": "error: memory allocation growing, risk of OOM"
     },
     {
-      "timestamp": "1784920030765867284",
-      "line": "error: fatal simulated crash on startup"
+      "timestamp": "1784919765374278630",
+      "line": "error: memory allocation growing, risk of OOM"
+    },
+    {
+      "timestamp": "1784919765156857288",
+      "line": "error: memory allocation growing, risk of OOM"
+    },
+    {
+      "timestamp": "1784919764940820171",
+      "line": "error: memory allocation growing, risk of OOM"
+    },
+    {
+      "timestamp": "1784919742568702252",
+      "line": "error: memory allocation growing, risk of OOM"
+    },
+    {
+      "timestamp": "1784919742365327879",
+      "line": "error: memory allocation growing, risk of OOM"
+    },
+    {
+      "timestamp": "1784919742156008199",
+      "line": "error: memory allocation growing, risk of OOM"
+    },
+    {
+      "timestamp": "1784919728783104324",
+      "line": "error: memory allocation growing, risk of OOM"
+    },
+    {
+      "timestamp": "1784919728567680523",
+      "line": "error: memory allocation growing, risk of OOM"
+    },
+    {
+      "timestamp": "1784919728358841607",
+      "line": "error: memory allocation growing, risk of OOM"
+    },
+    {
+      "timestamp": "1784919726395099244",
+      "line": "error: memory allocation growing, risk of OOM"
+    },
+    {
+      "timestamp": "1784919726178785626",
+      "line": "error: memory allocation growing, risk of OOM"
+    },
+    {
+      "timestamp": "1784919725968824256",
+      "line": "error: memory allocation growing, risk of OOM"
     }
   ],
   "k8s_events": [
@@ -301,11 +337,7 @@
     },
     {
       "pod": "autosre-fixture-oom-kill-5c65c595bf-d9qlq",
-      "restarts": 6
-    },
-    {
-      "pod": "autosre-fixture-crash-loop-67c78bc4ff-6896m",
-      "restarts": 2
+      "restarts": 3
     }
   ]
 }
