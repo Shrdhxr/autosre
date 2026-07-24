@@ -1,4 +1,0 @@
-{"type": "POD_RESTART", "service": "autosre-fixture-oom-kill-5c65c595bf-d9qlq", "value": 3.4236655219551233, "message": "Pod autosre-fixture-oom-kill-5c65c595bf-d9qlq has restarted 3 times", "severity": "HIGH", "timestamp": "2026-07-24 19:02:45"}
-{"type": "CRASH_LOOP", "service": "autosre-fixture-oom-kill-5c65c595bf-d9qlq", "value": 1, "message": "Pod autosre-fixture-oom-kill-5c65c595bf-d9qlq is in CrashLoopBackOff", "severity": "CRITICAL", "timestamp": "2026-07-24 19:03:45"}
-{"type": "CRASH_LOOP", "service": "autosre-fixture-crash-loop-67c78bc4ff-6896m", "value": 1, "message": "Pod autosre-fixture-crash-loop-67c78bc4ff-6896m is in CrashLoopBackOff", "severity": "CRITICAL", "timestamp": "2026-07-24 19:07:46"}
-{"type": "POD_RESTART", "service": "autosre-fixture-crash-loop-67c78bc4ff-6896m", "value": 2.243115289724612, "message": "Pod autosre-fixture-crash-loop-67c78bc4ff-6896m has restarted 2 times", "severity": "HIGH", "timestamp": "2026-07-24 19:08:16"}
