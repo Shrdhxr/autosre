@@ -1,0 +1,84 @@
+apiVersion: monitoring.coreos.com/v1
+kind: PrometheusRule
+metadata:
+  name: autosre-alert-rules
+  namespace: monitoring
+  labels:
+    release: prometheus
+spec:
+  groups:
+    - name: autosre.pod.rules
+      interval: 30s
+      rules:
+
+        # Pod in CrashLoopBackOff
+        - alert: PodCrashLoopBackOff
+          expr: kube_pod_container_status_waiting_reason{namespace="default", reason="CrashLoopBackOff"} == 1
+          for: 1m
+          labels:
+            severity: critical
+          annotations:
+            summary: "Pod {{ $labels.pod }} is in CrashLoopBackOff"
+            description: "Pod {{ $labels.pod }} in namespace {{ $labels.namespace }} has been in CrashLoopBackOff for more than 1 minute."
+
+        # Pod restarted more than 3 times
+        - alert: PodHighRestartCount
+          expr: kube_pod_container_status_restarts_total{namespace="default"} > 3
+          for: 2m
+          labels:
+            severity: warning
+          annotations:
+            summary: "Pod {{ $labels.pod }} has restarted {{ $value }} times"
+            description: "Pod {{ $labels.pod }} has restarted more than 3 times in the last 2 minutes."
+
+        # Pod not running
+        - alert: PodNotRunning
+          expr: kube_pod_status_phase{namespace="default", phase=~"Failed|Unknown"} == 1
+          for: 1m
+          labels:
+            severity: critical
+          annotations:
+            summary: "Pod {{ $labels.pod }} is not running"
+            description: "Pod {{ $labels.pod }} is in {{ $labels.phase }} phase."
+
+    - name: autosre.resource.rules
+      interval: 30s
+      rules:
+
+        # High CPU usage
+        - alert: HighCPUUsage
+          expr: |
+            sum(rate(container_cpu_usage_seconds_total{namespace="default", container!=""}[5m])) by (pod)
+            /
+            sum(container_spec_cpu_quota{namespace="default", container!=""} / container_spec_cpu_period{namespace="default", container!=""}) by (pod)
+            > 0.8
+          for: 2m
+          labels:
+            severity: warning
+          annotations:
+            summary: "High CPU usage on pod {{ $labels.pod }}"
+            description: "Pod {{ $labels.pod }} CPU usage is above 80% for more than 2 minutes."
+
+        # High memory usage
+        - alert: HighMemoryUsage
+          expr: |
+            container_memory_working_set_bytes{namespace="default", container!=""}
+            /
+            container_spec_memory_limit_bytes{namespace="default", container!=""}
+            > 0.8
+          for: 2m
+          labels:
+            severity: warning
+          annotations:
+            summary: "High memory usage on pod {{ $labels.pod }}"
+            description: "Pod {{ $labels.pod }} memory usage is above 80% for more than 2 minutes."
+
+        # Node memory pressure
+        - alert: NodeMemoryPressure
+          expr: kube_node_status_condition{condition="MemoryPressure", status="true"} == 1
+          for: 1m
+          labels:
+            severity: critical
+          annotations:
+            summary: "Node {{ $labels.node }} has memory pressure"
+            description: "Node {{ $labels.node }} is under memory pressure."
