@@ -85,6 +85,11 @@ except ImportError:
 
 AGENT_DIR = os.path.dirname(os.path.abspath(__file__))
 
+# Fix OLLAMA_HOST format — add http:// if missing
+_raw_host = os.environ.get("OLLAMA_HOST", "localhost:11434")
+_DEFAULT_HOST = _raw_host if _raw_host.startswith("http") else f"http://{_raw_host}"
+
+
 # ── Module 1: Ollama API Client ──────────────────────────────────────────
 class OllamaClient:
     """Thin wrapper around the Ollama /api/generate endpoint.
@@ -547,13 +552,13 @@ def main():
         "--snapshot", default=os.path.join(AGENT_DIR, "latest_snapshot.json"),
         help="Path to a telemetry snapshot JSON (default: latest_snapshot.json next to this script)",
     )
-    parser.add_argument("--host", default=os.environ.get("OLLAMA_HOST", "http://localhost:11434"),
+    parser.add_argument("--host", default=_DEFAULT_HOST,
                         help="Ollama host URL")
     parser.add_argument("--model", default=os.environ.get("OLLAMA_MODEL", "llama3.1"),
                         help="Ollama model name")
     parser.add_argument("--max-retries", type=int, default=3,
                         help="Max retries when the model returns malformed/invalid JSON")
-    parser.add_argument("--timeout", type=int, default=30, help="Ollama request timeout in seconds")
+    parser.add_argument("--timeout", type=int, default=60, help="Ollama request timeout in seconds")
     parser.add_argument("--watch", action="store_true",
                         help="Continuously watch the snapshot file and re-diagnose on change")
     parser.add_argument("--interval", type=int, default=5, help="Poll interval in seconds for --watch")

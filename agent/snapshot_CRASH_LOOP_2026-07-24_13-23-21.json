@@ -1,19 +1,19 @@
 {
-  "timestamp": "2026-07-24T13:23:51.851876",
+  "timestamp": "2026-07-24T13:23:21.631697",
   "namespace": "default",
   "anomaly_event": {
-    "type": "POD_RESTART",
+    "type": "CRASH_LOOP",
     "service": "crasher",
-    "value": 4.252750183345556,
-    "message": "Pod crasher has restarted 4 times",
-    "severity": "HIGH",
-    "timestamp": "2026-07-24 13:23:51"
+    "value": 1,
+    "message": "Pod crasher is in CrashLoopBackOff",
+    "severity": "CRITICAL",
+    "timestamp": "2026-07-24 13:23:21"
   },
   "metrics": {
     "cpu_usage": [
       {
         "pod": "redis-cart-7ff8f4d6ff-6sfwl",
-        "cpu_cores": 0.0029
+        "cpu_cores": 0.0027
       },
       {
         "pod": "paymentservice-5d879448df-c7kjf",
@@ -21,7 +21,7 @@
       },
       {
         "pod": "recommendationservice-6989468ddf-24j95",
-        "cpu_cores": 0.0088
+        "cpu_cores": 0.0086
       },
       {
         "pod": "shippingservice-69cbf7c6c7-l4tdw",
@@ -29,23 +29,23 @@
       },
       {
         "pod": "currencyservice-8c464cb79-zwddw",
-        "cpu_cores": 0.0076
+        "cpu_cores": 0.007
       },
       {
         "pod": "frontend-849f6b48f8-bs82h",
-        "cpu_cores": 0.0149
+        "cpu_cores": 0.0148
       },
       {
         "pod": "productcatalogservice-64cd8c46d9-445mh",
-        "cpu_cores": 0.0075
+        "cpu_cores": 0.0072
       },
       {
         "pod": "cartservice-7b6889d85b-4c8gf",
-        "cpu_cores": 0.0065
+        "cpu_cores": 0.0063
       },
       {
         "pod": "emailservice-7b7898b7f7-dqbvx",
-        "cpu_cores": 0.0033
+        "cpu_cores": 0.0032
       },
       {
         "pod": "adservice-8d9d67f7-wd4gv",
@@ -53,11 +53,11 @@
       },
       {
         "pod": "checkoutservice-5987dfd54c-f72pv",
-        "cpu_cores": 0.0011
+        "cpu_cores": 0.001
       },
       {
         "pod": "loadgenerator-746ffcd44c-5vqfr",
-        "cpu_cores": 0.0039
+        "cpu_cores": 0.0038
       }
     ],
     "memory_usage": [
@@ -67,7 +67,7 @@
       },
       {
         "pod": "paymentservice-5d879448df-c7kjf",
-        "memory_mb": 25.43
+        "memory_mb": 25.52
       },
       {
         "pod": "recommendationservice-6989468ddf-24j95",
@@ -79,35 +79,35 @@
       },
       {
         "pod": "currencyservice-8c464cb79-zwddw",
-        "memory_mb": 37.17
+        "memory_mb": 36.94
       },
       {
         "pod": "frontend-849f6b48f8-bs82h",
-        "memory_mb": 10.86
+        "memory_mb": 10.87
       },
       {
         "pod": "productcatalogservice-64cd8c46d9-445mh",
-        "memory_mb": 8.33
+        "memory_mb": 8.64
       },
       {
         "pod": "cartservice-7b6889d85b-4c8gf",
-        "memory_mb": 50.13
+        "memory_mb": 50.12
       },
       {
         "pod": "emailservice-7b7898b7f7-dqbvx",
-        "memory_mb": 37.15
+        "memory_mb": 37.14
       },
       {
         "pod": "adservice-8d9d67f7-wd4gv",
-        "memory_mb": 102.48
+        "memory_mb": 102.46
       },
       {
         "pod": "checkoutservice-5987dfd54c-f72pv",
-        "memory_mb": 8.21
+        "memory_mb": 8.6
       },
       {
         "pod": "loadgenerator-746ffcd44c-5vqfr",
-        "memory_mb": 48.73
+        "memory_mb": 48.49
       }
     ],
     "restart_counts": [
@@ -161,7 +161,7 @@
       },
       {
         "pod": "crasher",
-        "restarts": 3
+        "restarts": 1
       }
     ],
     "pod_statuses": [
@@ -218,7 +218,11 @@
         "phase": "Running"
       }
     ],
-    "crash_loop_pods": []
+    "crash_loop_pods": [
+      {
+        "pod": "crasher"
+      }
+    ]
   },
   "recent_errors": [],
   "k8s_events": [
@@ -272,7 +276,7 @@
     },
     {
       "pod": "crasher",
-      "restarts": 3
+      "restarts": 1
     }
   ]
 }
