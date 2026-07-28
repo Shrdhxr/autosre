@@ -3,6 +3,7 @@ import time
 import json
 from datetime import datetime
 from telemetry_collector import build_snapshot
+from event_bus import publish_incident_detected
 
 # ── Config ────────────────────────────────────────────────────────
 PROMETHEUS_URL = "http://localhost:9090"
@@ -129,6 +130,11 @@ def handle_anomaly(anomaly):
     # Save latest snapshot for LLM agent to always read
     with open("latest_snapshot.json", "w") as f:
         json.dump(snapshot, f, indent=2)
+
+    # NEW — Publish to Redis Streams event bus
+    publish_incident_detected(anomaly, snapshot_file=filename)
+
+    print(f"  ⏳ Waiting for LLM agent to process...\n")
 
 # ── Main loop ─────────────────────────────────────────────────────
 def run():

@@ -1,0 +1,282 @@
+{
+  "timestamp": "2026-07-28T11:02:14.661032",
+  "namespace": "default",
+  "anomaly_event": {
+    "type": "CRASH_LOOP",
+    "service": "autosre-fixture-oom-kill-5c65c595bf-c8z5n",
+    "value": 1,
+    "message": "Pod autosre-fixture-oom-kill-5c65c595bf-c8z5n is in CrashLoopBackOff",
+    "severity": "CRITICAL",
+    "timestamp": "2026-07-28 11:02:14"
+  },
+  "metrics": {
+    "cpu_usage": [
+      {
+        "pod": "redis-cart-7ff8f4d6ff-6sfwl",
+        "cpu_cores": 0.0038
+      },
+      {
+        "pod": "paymentservice-5d879448df-c7kjf",
+        "cpu_cores": 0.0012
+      },
+      {
+        "pod": "recommendationservice-6989468ddf-24j95",
+        "cpu_cores": 0.0126
+      },
+      {
+        "pod": "shippingservice-69cbf7c6c7-l4tdw",
+        "cpu_cores": 0.0016
+      },
+      {
+        "pod": "currencyservice-8c464cb79-zwddw",
+        "cpu_cores": 0.0119
+      },
+      {
+        "pod": "frontend-849f6b48f8-bs82h",
+        "cpu_cores": 0.0231
+      },
+      {
+        "pod": "productcatalogservice-64cd8c46d9-445mh",
+        "cpu_cores": 0.0112
+      },
+      {
+        "pod": "cartservice-7b6889d85b-4c8gf",
+        "cpu_cores": 0.0105
+      },
+      {
+        "pod": "emailservice-7b7898b7f7-dqbvx",
+        "cpu_cores": 0.0062
+      },
+      {
+        "pod": "adservice-8d9d67f7-wd4gv",
+        "cpu_cores": 0.0057
+      },
+      {
+        "pod": "checkoutservice-5987dfd54c-f72pv",
+        "cpu_cores": 0.0014
+      },
+      {
+        "pod": "loadgenerator-746ffcd44c-5vqfr",
+        "cpu_cores": 0.0061
+      }
+    ],
+    "memory_usage": [
+      {
+        "pod": "redis-cart-7ff8f4d6ff-6sfwl",
+        "memory_mb": 9.58
+      },
+      {
+        "pod": "paymentservice-5d879448df-c7kjf",
+        "memory_mb": 22.46
+      },
+      {
+        "pod": "recommendationservice-6989468ddf-24j95",
+        "memory_mb": 33.16
+      },
+      {
+        "pod": "shippingservice-69cbf7c6c7-l4tdw",
+        "memory_mb": 7.33
+      },
+      {
+        "pod": "currencyservice-8c464cb79-zwddw",
+        "memory_mb": 33.39
+      },
+      {
+        "pod": "frontend-849f6b48f8-bs82h",
+        "memory_mb": 10.54
+      },
+      {
+        "pod": "productcatalogservice-64cd8c46d9-445mh",
+        "memory_mb": 8.29
+      },
+      {
+        "pod": "cartservice-7b6889d85b-4c8gf",
+        "memory_mb": 50.21
+      },
+      {
+        "pod": "emailservice-7b7898b7f7-dqbvx",
+        "memory_mb": 37.18
+      },
+      {
+        "pod": "adservice-8d9d67f7-wd4gv",
+        "memory_mb": 95.91
+      },
+      {
+        "pod": "checkoutservice-5987dfd54c-f72pv",
+        "memory_mb": 7.8
+      },
+      {
+        "pod": "loadgenerator-746ffcd44c-5vqfr",
+        "memory_mb": 48.16
+      }
+    ],
+    "restart_counts": [
+      {
+        "pod": "redis-cart-7ff8f4d6ff-6sfwl",
+        "restarts": 6
+      },
+      {
+        "pod": "frontend-849f6b48f8-bs82h",
+        "restarts": 6
+      },
+      {
+        "pod": "paymentservice-5d879448df-c7kjf",
+        "restarts": 3
+      },
+      {
+        "pod": "loadgenerator-746ffcd44c-5vqfr",
+        "restarts": 6
+      },
+      {
+        "pod": "currencyservice-8c464cb79-zwddw",
+        "restarts": 6
+      },
+      {
+        "pod": "shippingservice-69cbf7c6c7-l4tdw",
+        "restarts": 6
+      },
+      {
+        "pod": "productcatalogservice-64cd8c46d9-445mh",
+        "restarts": 6
+      },
+      {
+        "pod": "checkoutservice-5987dfd54c-f72pv",
+        "restarts": 6
+      },
+      {
+        "pod": "emailservice-7b7898b7f7-dqbvx",
+        "restarts": 7
+      },
+      {
+        "pod": "recommendationservice-6989468ddf-24j95",
+        "restarts": 6
+      },
+      {
+        "pod": "cartservice-7b6889d85b-4c8gf",
+        "restarts": 6
+      },
+      {
+        "pod": "adservice-8d9d67f7-wd4gv",
+        "restarts": 6
+      },
+      {
+        "pod": "autosre-fixture-oom-kill-5c65c595bf-c8z5n",
+        "restarts": 1
+      }
+    ],
+    "pod_statuses": [
+      {
+        "pod": "redis-cart-7ff8f4d6ff-6sfwl",
+        "phase": "Running"
+      },
+      {
+        "pod": "frontend-849f6b48f8-bs82h",
+        "phase": "Running"
+      },
+      {
+        "pod": "paymentservice-5d879448df-c7kjf",
+        "phase": "Running"
+      },
+      {
+        "pod": "loadgenerator-746ffcd44c-5vqfr",
+        "phase": "Running"
+      },
+      {
+        "pod": "currencyservice-8c464cb79-zwddw",
+        "phase": "Running"
+      },
+      {
+        "pod": "shippingservice-69cbf7c6c7-l4tdw",
+        "phase": "Running"
+      },
+      {
+        "pod": "productcatalogservice-64cd8c46d9-445mh",
+        "phase": "Running"
+      },
+      {
+        "pod": "checkoutservice-5987dfd54c-f72pv",
+        "phase": "Running"
+      },
+      {
+        "pod": "emailservice-7b7898b7f7-dqbvx",
+        "phase": "Running"
+      },
+      {
+        "pod": "recommendationservice-6989468ddf-24j95",
+        "phase": "Running"
+      },
+      {
+        "pod": "cartservice-7b6889d85b-4c8gf",
+        "phase": "Running"
+      },
+      {
+        "pod": "adservice-8d9d67f7-wd4gv",
+        "phase": "Running"
+      },
+      {
+        "pod": "autosre-fixture-oom-kill-5c65c595bf-c8z5n",
+        "phase": "Running"
+      }
+    ],
+    "crash_loop_pods": [
+      {
+        "pod": "autosre-fixture-oom-kill-5c65c595bf-c8z5n"
+      }
+    ]
+  },
+  "recent_errors": [],
+  "k8s_events": [
+    {
+      "pod": "redis-cart-7ff8f4d6ff-6sfwl",
+      "restarts": 6
+    },
+    {
+      "pod": "frontend-849f6b48f8-bs82h",
+      "restarts": 6
+    },
+    {
+      "pod": "paymentservice-5d879448df-c7kjf",
+      "restarts": 3
+    },
+    {
+      "pod": "loadgenerator-746ffcd44c-5vqfr",
+      "restarts": 6
+    },
+    {
+      "pod": "currencyservice-8c464cb79-zwddw",
+      "restarts": 6
+    },
+    {
+      "pod": "shippingservice-69cbf7c6c7-l4tdw",
+      "restarts": 6
+    },
+    {
+      "pod": "productcatalogservice-64cd8c46d9-445mh",
+      "restarts": 6
+    },
+    {
+      "pod": "checkoutservice-5987dfd54c-f72pv",
+      "restarts": 6
+    },
+    {
+      "pod": "emailservice-7b7898b7f7-dqbvx",
+      "restarts": 7
+    },
+    {
+      "pod": "recommendationservice-6989468ddf-24j95",
+      "restarts": 6
+    },
+    {
+      "pod": "cartservice-7b6889d85b-4c8gf",
+      "restarts": 6
+    },
+    {
+      "pod": "adservice-8d9d67f7-wd4gv",
+      "restarts": 6
+    },
+    {
+      "pod": "autosre-fixture-oom-kill-5c65c595bf-c8z5n",
+      "restarts": 1
+    }
+  ]
+}

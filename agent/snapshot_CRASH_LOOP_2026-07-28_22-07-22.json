@@ -1,0 +1,282 @@
+{
+  "timestamp": "2026-07-28T22:07:22.309997",
+  "namespace": "default",
+  "anomaly_event": {
+    "type": "CRASH_LOOP",
+    "service": "crasher",
+    "value": 1,
+    "message": "Pod crasher is in CrashLoopBackOff",
+    "severity": "CRITICAL",
+    "timestamp": "2026-07-28 22:07:22"
+  },
+  "metrics": {
+    "cpu_usage": [
+      {
+        "pod": "redis-cart-7ff8f4d6ff-6sfwl",
+        "cpu_cores": 0.0023
+      },
+      {
+        "pod": "paymentservice-5d879448df-c7kjf",
+        "cpu_cores": 0.0006
+      },
+      {
+        "pod": "recommendationservice-6989468ddf-24j95",
+        "cpu_cores": 0.0066
+      },
+      {
+        "pod": "shippingservice-69cbf7c6c7-l4tdw",
+        "cpu_cores": 0.0009
+      },
+      {
+        "pod": "currencyservice-8c464cb79-zwddw",
+        "cpu_cores": 0.0058
+      },
+      {
+        "pod": "frontend-849f6b48f8-bs82h",
+        "cpu_cores": 0.0127
+      },
+      {
+        "pod": "productcatalogservice-64cd8c46d9-445mh",
+        "cpu_cores": 0.0059
+      },
+      {
+        "pod": "cartservice-7b6889d85b-4c8gf",
+        "cpu_cores": 0.0052
+      },
+      {
+        "pod": "emailservice-7b7898b7f7-dqbvx",
+        "cpu_cores": 0.0032
+      },
+      {
+        "pod": "adservice-8d9d67f7-wd4gv",
+        "cpu_cores": 0.0035
+      },
+      {
+        "pod": "checkoutservice-5987dfd54c-f72pv",
+        "cpu_cores": 0.0008
+      },
+      {
+        "pod": "loadgenerator-746ffcd44c-5vqfr",
+        "cpu_cores": 0.0034
+      }
+    ],
+    "memory_usage": [
+      {
+        "pod": "redis-cart-7ff8f4d6ff-6sfwl",
+        "memory_mb": 9.56
+      },
+      {
+        "pod": "paymentservice-5d879448df-c7kjf",
+        "memory_mb": 22.82
+      },
+      {
+        "pod": "recommendationservice-6989468ddf-24j95",
+        "memory_mb": 33.16
+      },
+      {
+        "pod": "shippingservice-69cbf7c6c7-l4tdw",
+        "memory_mb": 7.54
+      },
+      {
+        "pod": "currencyservice-8c464cb79-zwddw",
+        "memory_mb": 33.82
+      },
+      {
+        "pod": "frontend-849f6b48f8-bs82h",
+        "memory_mb": 11.0
+      },
+      {
+        "pod": "productcatalogservice-64cd8c46d9-445mh",
+        "memory_mb": 8.2
+      },
+      {
+        "pod": "cartservice-7b6889d85b-4c8gf",
+        "memory_mb": 52.11
+      },
+      {
+        "pod": "emailservice-7b7898b7f7-dqbvx",
+        "memory_mb": 36.97
+      },
+      {
+        "pod": "adservice-8d9d67f7-wd4gv",
+        "memory_mb": 97.43
+      },
+      {
+        "pod": "checkoutservice-5987dfd54c-f72pv",
+        "memory_mb": 7.72
+      },
+      {
+        "pod": "loadgenerator-746ffcd44c-5vqfr",
+        "memory_mb": 47.93
+      }
+    ],
+    "restart_counts": [
+      {
+        "pod": "emailservice-7b7898b7f7-dqbvx",
+        "restarts": 8
+      },
+      {
+        "pod": "adservice-8d9d67f7-wd4gv",
+        "restarts": 7
+      },
+      {
+        "pod": "productcatalogservice-64cd8c46d9-445mh",
+        "restarts": 7
+      },
+      {
+        "pod": "redis-cart-7ff8f4d6ff-6sfwl",
+        "restarts": 7
+      },
+      {
+        "pod": "cartservice-7b6889d85b-4c8gf",
+        "restarts": 7
+      },
+      {
+        "pod": "recommendationservice-6989468ddf-24j95",
+        "restarts": 7
+      },
+      {
+        "pod": "frontend-849f6b48f8-bs82h",
+        "restarts": 7
+      },
+      {
+        "pod": "paymentservice-5d879448df-c7kjf",
+        "restarts": 4
+      },
+      {
+        "pod": "shippingservice-69cbf7c6c7-l4tdw",
+        "restarts": 7
+      },
+      {
+        "pod": "checkoutservice-5987dfd54c-f72pv",
+        "restarts": 7
+      },
+      {
+        "pod": "currencyservice-8c464cb79-zwddw",
+        "restarts": 7
+      },
+      {
+        "pod": "loadgenerator-746ffcd44c-5vqfr",
+        "restarts": 7
+      },
+      {
+        "pod": "crasher",
+        "restarts": 1
+      }
+    ],
+    "pod_statuses": [
+      {
+        "pod": "emailservice-7b7898b7f7-dqbvx",
+        "phase": "Running"
+      },
+      {
+        "pod": "adservice-8d9d67f7-wd4gv",
+        "phase": "Running"
+      },
+      {
+        "pod": "productcatalogservice-64cd8c46d9-445mh",
+        "phase": "Running"
+      },
+      {
+        "pod": "redis-cart-7ff8f4d6ff-6sfwl",
+        "phase": "Running"
+      },
+      {
+        "pod": "cartservice-7b6889d85b-4c8gf",
+        "phase": "Running"
+      },
+      {
+        "pod": "recommendationservice-6989468ddf-24j95",
+        "phase": "Running"
+      },
+      {
+        "pod": "frontend-849f6b48f8-bs82h",
+        "phase": "Running"
+      },
+      {
+        "pod": "paymentservice-5d879448df-c7kjf",
+        "phase": "Running"
+      },
+      {
+        "pod": "shippingservice-69cbf7c6c7-l4tdw",
+        "phase": "Running"
+      },
+      {
+        "pod": "checkoutservice-5987dfd54c-f72pv",
+        "phase": "Running"
+      },
+      {
+        "pod": "currencyservice-8c464cb79-zwddw",
+        "phase": "Running"
+      },
+      {
+        "pod": "loadgenerator-746ffcd44c-5vqfr",
+        "phase": "Running"
+      },
+      {
+        "pod": "crasher",
+        "phase": "Running"
+      }
+    ],
+    "crash_loop_pods": [
+      {
+        "pod": "crasher"
+      }
+    ]
+  },
+  "recent_errors": [],
+  "k8s_events": [
+    {
+      "pod": "emailservice-7b7898b7f7-dqbvx",
+      "restarts": 8
+    },
+    {
+      "pod": "adservice-8d9d67f7-wd4gv",
+      "restarts": 7
+    },
+    {
+      "pod": "productcatalogservice-64cd8c46d9-445mh",
+      "restarts": 7
+    },
+    {
+      "pod": "redis-cart-7ff8f4d6ff-6sfwl",
+      "restarts": 7
+    },
+    {
+      "pod": "cartservice-7b6889d85b-4c8gf",
+      "restarts": 7
+    },
+    {
+      "pod": "recommendationservice-6989468ddf-24j95",
+      "restarts": 7
+    },
+    {
+      "pod": "frontend-849f6b48f8-bs82h",
+      "restarts": 7
+    },
+    {
+      "pod": "paymentservice-5d879448df-c7kjf",
+      "restarts": 4
+    },
+    {
+      "pod": "shippingservice-69cbf7c6c7-l4tdw",
+      "restarts": 7
+    },
+    {
+      "pod": "checkoutservice-5987dfd54c-f72pv",
+      "restarts": 7
+    },
+    {
+      "pod": "currencyservice-8c464cb79-zwddw",
+      "restarts": 7
+    },
+    {
+      "pod": "loadgenerator-746ffcd44c-5vqfr",
+      "restarts": 7
+    },
+    {
+      "pod": "crasher",
+      "restarts": 1
+    }
+  ]
+}
