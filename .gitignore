@@ -1,0 +1,21 @@
+# Generated snapshot and event files
+agent/snapshot_*.json
+agent/latest_snapshot.json
+agent/anomaly_events.json
+agent/telemetry_snapshot.json
+agent/diagnosis_*.json
+agent/diagnosis_log.jsonl
+
+# Python
+__pycache__/
+*.pyc
+venv/
+.venv/
+
+# OS files
+.DS_Store
+Thumbs.db
+
+# Editor files
+.vscode/
+.idea/
