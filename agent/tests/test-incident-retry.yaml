@@ -1,0 +1,14 @@
+apiVersion: autosre.io/v1
+kind: AutoSREIncident
+metadata:
+  name: test-incident-005
+  namespace: default
+spec:
+  service: crasher
+  anomalyType: CRASH_LOOP
+  severity: CRITICAL
+  diagnosis: "Testing retry and circuit breaker logic"
+  recommendedAction: restart_pod
+  confidence: 0.85
+status:
+  phase: Pending

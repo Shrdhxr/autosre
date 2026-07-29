@@ -4,6 +4,8 @@ from kubernetes import client, config
 import logging
 import sys
 import os
+import time
+from datetime import datetime, timedelta
 
 # Import our event bus so the operator can publish completion events
 sys.path.append(os.path.join(os.path.dirname(__file__), "..", "agent"))
@@ -25,8 +27,7 @@ logging.basicConfig(level=logging.INFO)
 def restart_pod(service, namespace="default"):
     """Performs a rolling restart of a deployment by patching an annotation."""
     try:
-        import datetime
-        now = datetime.datetime.utcnow().isoformat()
+        now = datetime.now().isoformat()
         body = {
             "spec": {
                 "template": {
@@ -99,21 +100,66 @@ def execute_action(action, service, namespace="default"):
     return handler(service, namespace)
 
 
-# ── kopf Handlers ─────────────────────────────────────────────────
+# ── In-memory cooldown tracker ────────────────────────────────────
+# Tracks the last time each service was remediated to prevent thrashing
+_last_remediation = {}  # { "service_name": datetime }
+COOLDOWN_SECONDS = 60  # don't remediate the same service twice within 60s
+
+
+def is_in_cooldown(service):
+    """Check if this service was remediated too recently."""
+    last_time = _last_remediation.get(service)
+    if last_time is None:
+        return False
+    elapsed = (datetime.now() - last_time).total_seconds()
+    return elapsed < COOLDOWN_SECONDS
+
+
+def mark_remediated(service):
+    """Record that this service was just remediated."""
+    _last_remediation[service] = datetime.now()
+
+
+# ── kopf Handler with Retry + Idempotency ─────────────────────────
 @kopf.on.create('autosre.io', 'v1', 'autosreincidents')
-def on_incident_created(spec, status, namespace, name, patch, logger, **kwargs):
+def on_incident_created(spec, status, namespace, name, patch, logger, retry, **kwargs):
     """
     Triggered automatically whenever a new AutoSREIncident object
-    is created in the cluster.
+    is created. Includes idempotency checks and retry-aware logic.
+
+    `retry` is provided automatically by kopf — it's the number of
+    times this specific handler has been retried for this object.
     """
-    service           = spec.get("service")
-    action            = spec.get("recommendedAction", "none")
-    severity          = spec.get("severity")
-    diagnosis         = spec.get("diagnosis", "")
+    service   = spec.get("service")
+    action    = spec.get("recommendedAction", "none")
+    severity  = spec.get("severity")
 
-    logger.info(f"🔔 New incident received: {name} | service={service} | action={action}")
+    logger.info(f"🔔 Incident received: {name} | service={service} | action={action} | attempt={retry + 1}")
 
-    # Update status to show we're processing it
+    # ── Idempotency Guard 1: Already completed? ────────────────────
+    if status.get("phase") == "Completed":
+        logger.info(f"⏭️  Incident {name} already marked Completed — skipping duplicate execution")
+        return
+
+    # ── Idempotency Guard 2: Max retries exceeded? ──────────────────
+    MAX_RETRIES = 3
+    if retry >= MAX_RETRIES:
+        patch.status["phase"] = "Failed"
+        patch.status["message"] = f"Exceeded max retries ({MAX_RETRIES}) — circuit breaker triggered"
+        logger.error(f"🛑 Circuit breaker: {name} failed {MAX_RETRIES} times, giving up")
+        publish_remediation_completed(
+            service=service, action=action, success=False,
+            details=f"Circuit breaker triggered after {MAX_RETRIES} failed attempts"
+        )
+        return
+
+    # ── Cooldown Guard: Was this service JUST remediated? ───────────
+    if is_in_cooldown(service):
+        patch.status["phase"] = "Skipped"
+        patch.status["message"] = f"Service {service} was remediated within the last {COOLDOWN_SECONDS}s — skipping to prevent thrashing"
+        logger.warning(f"⏳ Cooldown active for {service} — skipping to prevent thrashing")
+        return
+
     patch.status["phase"] = "Executing"
 
     if action == "none" or not action:
@@ -122,27 +168,34 @@ def on_incident_created(spec, status, namespace, name, patch, logger, **kwargs):
         logger.info(f"No remediation action needed for {name}")
         return
 
-    # Execute the remediation action
+    # ── Execute the remediation action ──────────────────────────────
     logger.info(f"⚙️  Executing action '{action}' on service '{service}'...")
     success, message = execute_action(action, service, namespace)
 
-    # Update the incident's status
     if success:
         patch.status["phase"] = "Completed"
         patch.status["message"] = message
+        mark_remediated(service)  # start the cooldown timer
         logger.info(f"✅ {message}")
     else:
-        patch.status["phase"] = "Failed"
-        patch.status["message"] = message
-        logger.error(f"❌ {message}")
+        # Let kopf retry automatically by raising an exception.
+        # kopf will re-run this handler with retry+1 next time,
+        # respecting the MAX_RETRIES guard above.
+        patch.status["phase"] = "Retrying"
+        patch.status["message"] = f"Attempt {retry + 1} failed: {message}"
+        logger.warning(f"⚠️  Attempt {retry + 1} failed: {message}")
 
-    # Publish completion event to Redis Streams
+        publish_remediation_completed(
+            service=service, action=action, success=False,
+            details=f"Attempt {retry + 1}: {message}"
+        )
+
+        raise kopf.TemporaryError(message, delay=10)  # retry after 10s
+
+    # ── Publish success event ────────────────────────────────────────
     try:
         publish_remediation_completed(
-            service=service,
-            action=action,
-            success=success,
-            details=message
+            service=service, action=action, success=success, details=message
         )
     except Exception as e:
         logger.warning(f"Could not publish to event bus: {e}")

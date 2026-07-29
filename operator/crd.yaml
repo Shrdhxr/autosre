@@ -51,7 +51,7 @@ spec:
               properties:
                 phase:
                   type: string
-                  enum: ["Pending", "AwaitingApproval", "Approved", "Executing", "Completed", "Failed"]
+                  enum: ["Pending", "AwaitingApproval", "Approved", "Executing", "Retrying", "Skipped", "Completed", "Failed"]
                 approvalState:
                   type: string
                   enum: ["NotRequired", "Waiting", "Approved", "Denied"]
