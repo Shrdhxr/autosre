@@ -1,0 +1,14 @@
+apiVersion: autosre.io/v1
+kind: AutoSREIncident
+metadata:
+  name: test-incident-002
+  namespace: default
+spec:
+  service: loadgenerator
+  anomalyType: HIGH_CPU
+  severity: MEDIUM
+  diagnosis: "Test remediation against a real deployment"
+  recommendedAction: restart_pod
+  confidence: 0.9
+status:
+  phase: Pending
