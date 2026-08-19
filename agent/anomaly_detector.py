@@ -4,6 +4,15 @@ import json
 from datetime import datetime
 from telemetry_collector import build_snapshot
 from event_bus import publish_incident_detected
+import re
+
+def pod_to_deployment(pod_name):
+    """
+    Strips Kubernetes-generated ReplicaSet/Pod suffixes so remediation
+    actions target the actual Deployment name.
+    e.g. 'loadgenerator-7675dbd584-zgg4r' -> 'loadgenerator'
+    """
+    return re.sub(r'-[a-z0-9]{8,10}-[a-z0-9]{5}$', '', pod_name)
 
 # ── Config ────────────────────────────────────────────────────────
 PROMETHEUS_URL = "http://localhost:9090"
@@ -28,17 +37,17 @@ def query(promql):
 # ── Detection functions ───────────────────────────────────────────
 def detect_pod_restarts():
     results = query(
-        'increase(kube_pod_container_status_restarts_total{namespace="default"}[5m]) > 0'
+        'increase(kube_pod_container_status_restarts_total{namespace="default"}[15m]) > 2'
     )
     anomalies = []
     for r in results:
-        pod = r["metric"].get("pod", "unknown")
+        pod = pod_to_deployment(r["metric"].get("pod", "unknown"))
         val = float(r["value"][1])
         anomalies.append({
             "type":     "POD_RESTART",
             "service":  pod,
             "value":    val,
-            "message":  f"Pod {pod} has restarted {int(val)} times",
+            "message":  f"Pod {pod} restarted {val:.0f} times in the last 15 minutes",
             "severity": "HIGH"
         })
     return anomalies
@@ -49,7 +58,7 @@ def detect_high_cpu():
     )
     anomalies = []
     for r in results:
-        pod = r["metric"].get("pod", "unknown")
+        pod = pod_to_deployment(r["metric"].get("pod", "unknown"))
         val = float(r["value"][1])
         anomalies.append({
             "type":     "HIGH_CPU",
@@ -72,7 +81,7 @@ def detect_high_memory():
     )
     anomalies = []
     for r in results:
-        pod = r["metric"].get("pod", "unknown")
+        pod = pod_to_deployment(r["metric"].get("pod", "unknown"))
         val = float(r["value"][1])
         anomalies.append({
             "type":     "HIGH_MEMORY",
@@ -89,7 +98,7 @@ def detect_pod_crashes():
     )
     anomalies = []
     for r in results:
-        pod = r["metric"].get("pod", "unknown")
+        pod = pod_to_deployment(r["metric"].get("pod", "unknown"))
         anomalies.append({
             "type":     "CRASH_LOOP",
             "service":  pod,

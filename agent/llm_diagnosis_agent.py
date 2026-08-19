@@ -58,8 +58,9 @@ import os
 import sys
 import time
 from datetime import datetime
-
 import requests
+sys.path.append(os.path.dirname(os.path.abspath(__file__)))
+from incident_creator import create_incident
 
 try:
     from jsonschema import validate as _jsonschema_validate
@@ -173,14 +174,23 @@ DIAGNOSIS_SCHEMA = {
         "affected_service": {"type": "string", "minLength": 1},
         "probable_cause": {"type": "string", "minLength": 1},
         "human_readable_summary": {"type": "string", "minLength": 1},
+        "recommended_action": {
+            "type": "string",
+            "enum": ["restart_pod", "scale_deployment", "rollback_deployment", "none"],
+        },
+        "confidence": {
+            "type": "number",
+            "minimum": 0.0,
+            "maximum": 1.0,
+        },
     },
     "required": [
         "severity",
         "affected_service",
         "probable_cause",
         "human_readable_summary",
+        "recommended_action",
     ],
-    "additionalProperties": False,
 }
 
 
@@ -273,8 +283,16 @@ exactly this schema:
   "severity": "CRITICAL" | "HIGH" | "MEDIUM" | "LOW",
   "affected_service": "<the pod/service most responsible>",
   "probable_cause": "<concise technical root-cause hypothesis>",
-  "human_readable_summary": "<1-2 sentence plain-English summary for an on-call engineer>"
+  "human_readable_summary": "<1-2 sentence plain-English summary for an on-call engineer>",
+  "recommended_action": "restart_pod" | "scale_deployment" | "rollback_deployment" | "none",
+  "confidence": <number between 0.0 and 1.0 reflecting your certainty in this diagnosis>
 }}
+
+Guidance for recommended_action:
+- "restart_pod" — use when a pod is crash-looping, stuck, or in a bad state that a fresh restart would likely resolve
+- "scale_deployment" — use when the issue is resource saturation (high CPU/memory) under load, not a crash
+- "rollback_deployment" — use when evidence suggests a recent deployment/config change caused the issue
+- "none" — use only if telemetry is too sparse to confidently recommend an action
 
 If telemetry is sparse or missing, say so honestly in probable_cause rather
 than inventing details."""
@@ -528,6 +546,15 @@ def diagnose_once(client, snapshot_path, max_retries, log_path=None):
     diagnosis = diagnose_with_retry(client, snapshot, max_retries=max_retries)
     render_diagnosis(diagnosis, snapshot)
     log_diagnosis(snapshot, diagnosis, log_path)
+
+    # Automatically create the AutoSREIncident so the operator picks it up
+    if diagnosis.get("recommended_action") and diagnosis["recommended_action"] != "none":
+        try:
+            create_incident(diagnosis, anomaly_event=snapshot.get("anomaly_event"))
+        except Exception as e:
+            print(f"[ERROR] Failed to create AutoSREIncident: {e}")
+    else:
+        print("[LLM] No remediation action recommended — skipping incident creation")
 
 
 def watch_snapshot(client, snapshot_path, max_retries, interval, log_path=None):
