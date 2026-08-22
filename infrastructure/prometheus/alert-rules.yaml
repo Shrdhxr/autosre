@@ -23,7 +23,7 @@ spec:
 
         # Pod restarted more than 3 times
         - alert: PodHighRestartCount
-          expr: kube_pod_container_status_restarts_total{namespace="default"} > 3
+          expr: increase(kube_pod_container_status_restarts_total{namespace="default"}[15m]) > 2
           for: 2m
           labels:
             severity: warning
@@ -82,3 +82,54 @@ spec:
           annotations:
             summary: "Node {{ $labels.node }} has memory pressure"
             description: "Node {{ $labels.node }} is under memory pressure."
+
+    - name: autosre.predictive.rules
+      interval: 30s
+      rules:
+
+        # Predicts memory will breach its limit within the next 15 minutes
+        - alert: PredictedMemoryExhaustion
+          expr: |
+            predict_linear(
+              container_memory_working_set_bytes{namespace="default", container!=""}[10m], 15*60
+            )
+            >
+            container_spec_memory_limit_bytes{namespace="default", container!=""}
+          for: 3m
+          labels:
+            severity: warning
+            type: predictive
+          annotations:
+            summary: "Pod {{ $labels.pod }} is trending toward memory exhaustion"
+            description: "Based on the last 10 minutes of memory usage, pod {{ $labels.pod }} is projected to exceed its memory limit within 15 minutes if the current trend continues."
+
+        # Predicts CPU will breach 90% within the next 10 minutes
+        - alert: PredictedCPUSaturation
+          expr: |
+            predict_linear(
+              rate(container_cpu_usage_seconds_total{namespace="default", container!=""}[5m])[10m:], 10*60
+            )
+            > 0.9
+          for: 3m
+          labels:
+            severity: warning
+            type: predictive
+          annotations:
+            summary: "Pod {{ $labels.pod }} is trending toward CPU saturation"
+            description: "Based on recent CPU usage trend, pod {{ $labels.pod }} is projected to exceed 90% CPU within 10 minutes."
+
+        # Predicts a pod will hit the restart-count danger zone based on recent restart velocity
+        - alert: PredictedRestartStorm
+          expr: |
+            predict_linear(
+              kube_pod_container_status_restarts_total{namespace="default"}[10m], 10*60
+            )
+            - kube_pod_container_status_restarts_total{namespace="default"}
+            > 3
+          for: 2m
+          labels:
+            severity: warning
+            type: predictive
+          annotations:
+            summary: "Pod {{ $labels.pod }} is trending toward a restart storm"
+            description: "Based on recent restart velocity, pod {{ $labels.pod }} is projected to accumulate 3+ more restarts in the next 10 minutes."

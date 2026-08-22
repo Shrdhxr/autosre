@@ -12,6 +12,33 @@ from datetime import datetime, timedelta
 # "auto"   = execute immediately, no human gate
 APPROVAL_MODE = os.getenv("AUTOSRE_APPROVAL_MODE", "manual")
 
+# ── Namespace allow-list ──────────────────────────────────────────
+ALLOWED_NAMESPACES = os.getenv("AUTOSRE_ALLOWED_NAMESPACES", "default").split(",")
+
+def is_namespace_allowed(namespace):
+    return namespace in ALLOWED_NAMESPACES
+
+
+# ── Audit log ──────────────────────────────────────────────────────
+AUDIT_LOG_PATH = os.path.join(os.path.dirname(__file__), "..", "agent", "audit_log.jsonl")
+
+def audit_log(incident_name, service, namespace, action, event, details=""):
+    """Appends a structured record of every operator decision to an audit trail."""
+    import json
+    entry = {
+        "timestamp":     datetime.now().isoformat(),
+        "incident":      incident_name,
+        "service":       service,
+        "namespace":     namespace,
+        "action":        action,
+        "event":         event,   # e.g. BLOCKED, APPROVED, DENIED, SUCCEEDED, FAILED, CIRCUIT_BREAKER
+        "details":       details,
+    }
+    try:
+        with open(AUDIT_LOG_PATH, "a") as f:
+            f.write(json.dumps(entry) + "\n")
+    except Exception as e:
+        print(f"[AuditLog] Warning: failed to write audit entry: {e}")
 
 def request_approval(incident_name, service, action, severity, diagnosis):
     """Blocks and asks a human to approve or deny a remediation action."""
@@ -148,18 +175,23 @@ def mark_remediated(service):
 # ── kopf Handler with Retry + Idempotency ─────────────────────────
 @kopf.on.create('autosre.io', 'v1', 'autosreincidents')
 def on_incident_created(spec, status, namespace, name, patch, logger, retry, **kwargs):
-    """
-    Triggered automatically whenever a new AutoSREIncident object
-    is created. Includes idempotency checks and retry-aware logic.
-
-    `retry` is provided automatically by kopf — it's the number of
-    times this specific handler has been retried for this object.
-    """
     service   = spec.get("service")
     action    = spec.get("recommendedAction", "none")
     severity  = spec.get("severity")
 
     logger.info(f"🔔 Incident received: {name} | service={service} | action={action} | attempt={retry + 1}")
+
+    # ── Namespace allow-list guard ───────────────────────────────
+    if not is_namespace_allowed(namespace):
+        patch.status["phase"] = "Failed"
+        patch.status["message"] = f"Namespace '{namespace}' is not in the allowed list — action blocked"
+        logger.error(f"🚫 BLOCKED: namespace '{namespace}' not allowed for {name}")
+        audit_log(name, service, namespace, action, "BLOCKED", f"Namespace '{namespace}' not in allow-list")
+        publish_remediation_completed(
+            service=service, action=action, success=False,
+            details=f"Blocked — namespace '{namespace}' not allowed"
+        )
+        return
 
     # ── Idempotency Guard 1: Already completed? ────────────────────
     if status.get("phase") == "Completed":
@@ -172,6 +204,7 @@ def on_incident_created(spec, status, namespace, name, patch, logger, retry, **k
         patch.status["phase"] = "Failed"
         patch.status["message"] = f"Exceeded max retries ({MAX_RETRIES}) — circuit breaker triggered"
         logger.error(f"🛑 Circuit breaker: {name} failed {MAX_RETRIES} times, giving up")
+        audit_log(name, service, namespace, action, "CIRCUIT_BREAKER", f"Failed {MAX_RETRIES} times")
         publish_remediation_completed(
             service=service, action=action, success=False,
             details=f"Circuit breaker triggered after {MAX_RETRIES} failed attempts"
@@ -183,12 +216,14 @@ def on_incident_created(spec, status, namespace, name, patch, logger, retry, **k
         patch.status["phase"] = "Skipped"
         patch.status["message"] = f"Service {service} was remediated within the last {COOLDOWN_SECONDS}s — skipping to prevent thrashing"
         logger.warning(f"⏳ Cooldown active for {service} — skipping to prevent thrashing")
+        audit_log(name, service, namespace, action, "COOLDOWN_SKIPPED", f"Within {COOLDOWN_SECONDS}s cooldown window")
         return
 
     if action == "none" or not action:
         patch.status["phase"] = "Completed"
         patch.status["message"] = "No action required"
         logger.info(f"No remediation action needed for {name}")
+        audit_log(name, service, namespace, action, "NO_ACTION", "LLM recommended no action")
         return
 
     # ── Human approval gate ──────────────────────────────────────
@@ -203,14 +238,17 @@ def on_incident_created(spec, status, namespace, name, patch, logger, retry, **k
             patch.status["approvalState"] = "Denied"
             patch.status["message"] = "Remediation denied by operator (human approval gate)"
             logger.warning(f"🙅 Remediation denied by human for {name}")
+            audit_log(name, service, namespace, action, "DENIED", "Human denied via approval gate")
             publish_remediation_completed(
                 service=service, action=action, success=False,
                 details="Denied by human approval gate"
             )
             return
         patch.status["approvalState"] = "Approved"
+        audit_log(name, service, namespace, action, "APPROVED", "Human approved via approval gate")
     else:
         patch.status["approvalState"] = "NotRequired"
+        audit_log(name, service, namespace, action, "AUTO_APPROVED", "AUTOSRE_APPROVAL_MODE=auto")
 
     patch.status["phase"] = "Executing"
 
@@ -221,24 +259,22 @@ def on_incident_created(spec, status, namespace, name, patch, logger, retry, **k
     if success:
         patch.status["phase"] = "Completed"
         patch.status["message"] = message
-        mark_remediated(service)  # start the cooldown timer
+        mark_remediated(service)
         logger.info(f"✅ {message}")
+        audit_log(name, service, namespace, action, "SUCCEEDED", message)
     else:
-        # Let kopf retry automatically by raising an exception.
-        # kopf will re-run this handler with retry+1 next time,
-        # respecting the MAX_RETRIES guard above.
         patch.status["phase"] = "Retrying"
         patch.status["message"] = f"Attempt {retry + 1} failed: {message}"
         logger.warning(f"⚠️  Attempt {retry + 1} failed: {message}")
+        audit_log(name, service, namespace, action, "FAILED", f"Attempt {retry + 1}: {message}")
 
         publish_remediation_completed(
             service=service, action=action, success=False,
             details=f"Attempt {retry + 1}: {message}"
         )
 
-        raise kopf.TemporaryError(message, delay=10)  # retry after 10s
+        raise kopf.TemporaryError(message, delay=10)
 
-    # ── Publish success event ────────────────────────────────────────
     try:
         publish_remediation_completed(
             service=service, action=action, success=success, details=message

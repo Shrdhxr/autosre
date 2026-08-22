@@ -1,0 +1,3 @@
+{"timestamp": "2026-08-22T21:25:51.321623", "incident": "test-blocked-001", "service": "prometheus", "namespace": "monitoring", "action": "restart_pod", "event": "BLOCKED", "details": "Namespace 'monitoring' not in allow-list"}
+{"timestamp": "2026-08-22T21:31:55.653570", "incident": "test-approval-001", "service": "loadgenerator", "namespace": "default", "action": "restart_pod", "event": "AUTO_APPROVED", "details": "AUTOSRE_APPROVAL_MODE=auto"}
+{"timestamp": "2026-08-22T21:31:55.671565", "incident": "test-approval-001", "service": "loadgenerator", "namespace": "default", "action": "restart_pod", "event": "SUCCEEDED", "details": "Deployment loadgenerator restarted successfully"}

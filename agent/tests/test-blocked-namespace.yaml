@@ -1,0 +1,14 @@
+apiVersion: autosre.io/v1
+kind: AutoSREIncident
+metadata:
+  name: test-blocked-001
+  namespace: monitoring
+spec:
+  service: prometheus
+  anomalyType: HIGH_CPU
+  severity: HIGH
+  diagnosis: "Testing namespace allow-list guard"
+  recommendedAction: restart_pod
+  confidence: 0.8
+status:
+  phase: Pending
