@@ -7,6 +7,31 @@ import os
 import time
 from datetime import datetime, timedelta
 
+# ── Human Approval Gate ──────────────────────────────────────────
+# "manual" = pause and ask before every action
+# "auto"   = execute immediately, no human gate
+APPROVAL_MODE = os.getenv("AUTOSRE_APPROVAL_MODE", "manual")
+
+
+def request_approval(incident_name, service, action, severity, diagnosis):
+    """Blocks and asks a human to approve or deny a remediation action."""
+    print("\n" + "=" * 60)
+    print("  🔒 APPROVAL REQUIRED")
+    print("=" * 60)
+    print(f"  Incident : {incident_name}")
+    print(f"  Service  : {service}")
+    print(f"  Action   : {action}")
+    print(f"  Severity : {severity}")
+    print(f"  Reason   : {diagnosis}")
+    print("=" * 60)
+    while True:
+        answer = input("  Approve this remediation action? [y/n]: ").strip().lower()
+        if answer in ("y", "yes"):
+            return True
+        if answer in ("n", "no"):
+            return False
+        print("  Please type 'y' or 'n'.")
+
 # Import our event bus so the operator can publish completion events
 sys.path.append(os.path.join(os.path.dirname(__file__), "..", "agent"))
 from event_bus import publish_remediation_completed
@@ -160,13 +185,34 @@ def on_incident_created(spec, status, namespace, name, patch, logger, retry, **k
         logger.warning(f"⏳ Cooldown active for {service} — skipping to prevent thrashing")
         return
 
-    patch.status["phase"] = "Executing"
-
     if action == "none" or not action:
         patch.status["phase"] = "Completed"
         patch.status["message"] = "No action required"
         logger.info(f"No remediation action needed for {name}")
         return
+
+    # ── Human approval gate ──────────────────────────────────────
+    if APPROVAL_MODE == "manual":
+        patch.status["phase"] = "AwaitingApproval"
+        patch.status["approvalState"] = "Waiting"
+        approved = request_approval(
+            name, service, action, severity, spec.get("diagnosis", "")
+        )
+        if not approved:
+            patch.status["phase"] = "Failed"
+            patch.status["approvalState"] = "Denied"
+            patch.status["message"] = "Remediation denied by operator (human approval gate)"
+            logger.warning(f"🙅 Remediation denied by human for {name}")
+            publish_remediation_completed(
+                service=service, action=action, success=False,
+                details="Denied by human approval gate"
+            )
+            return
+        patch.status["approvalState"] = "Approved"
+    else:
+        patch.status["approvalState"] = "NotRequired"
+
+    patch.status["phase"] = "Executing"
 
     # ── Execute the remediation action ──────────────────────────────
     logger.info(f"⚙️  Executing action '{action}' on service '{service}'...")
