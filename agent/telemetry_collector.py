@@ -1,6 +1,16 @@
 import requests
 import json
 from datetime import datetime, timedelta
+import re
+
+def pod_to_deployment(pod_name):
+    """
+    Strips Kubernetes-generated ReplicaSet/Pod suffixes so telemetry
+    consistently reports Deployment-level names, matching anomaly_detector.py.
+    """
+    if not pod_name:
+        return pod_name
+    return re.sub(r'-[a-z0-9]{8,10}-[a-z0-9]{5}$', '', pod_name)
 
 # ── Config ────────────────────────────────────────────────────────
 PROMETHEUS_URL = "http://localhost:9090"
@@ -31,7 +41,7 @@ def get_metrics_snapshot():
         f'sum(rate(container_cpu_usage_seconds_total{{namespace="{NAMESPACE}",container!=""}}[5m])) by (pod)'
     )
     metrics["cpu_usage"] = [
-        {"pod": r["metric"].get("pod"), "cpu_cores": round(float(r["value"][1]), 4)}
+        {"pod": pod_to_deployment(r["metric"].get("pod")), "cpu_cores": round(float(r["value"][1]), 4)}
         for r in cpu
     ]
 
@@ -40,7 +50,7 @@ def get_metrics_snapshot():
         f'container_memory_working_set_bytes{{namespace="{NAMESPACE}",container!=""}}'
     )
     metrics["memory_usage"] = [
-        {"pod": r["metric"].get("pod"), "memory_mb": round(float(r["value"][1]) / 1024 / 1024, 2)}
+        {"pod": pod_to_deployment(r["metric"].get("pod")), "memory_mb": round(float(r["value"][1]) / 1024 / 1024, 2)}
         for r in mem
     ]
 
@@ -49,7 +59,7 @@ def get_metrics_snapshot():
         f'kube_pod_container_status_restarts_total{{namespace="{NAMESPACE}"}}'
     )
     metrics["restart_counts"] = [
-        {"pod": r["metric"].get("pod"), "restarts": int(float(r["value"][1]))}
+        {"pod": pod_to_deployment(r["metric"].get("pod")), "restarts": int(float(r["value"][1]))}
         for r in restarts if int(float(r["value"][1])) > 0
     ]
 
@@ -58,7 +68,7 @@ def get_metrics_snapshot():
         f'kube_pod_status_phase{{namespace="{NAMESPACE}"}}'
     )
     metrics["pod_statuses"] = [
-        {"pod": r["metric"].get("pod"), "phase": r["metric"].get("phase")}
+        {"pod": pod_to_deployment(r["metric"].get("pod")), "phase": r["metric"].get("phase")}
         for r in statuses if float(r["value"][1]) == 1
     ]
 
@@ -67,7 +77,7 @@ def get_metrics_snapshot():
         f'kube_pod_container_status_waiting_reason{{namespace="{NAMESPACE}",reason="CrashLoopBackOff"}} == 1'
     )
     metrics["crash_loop_pods"] = [
-        {"pod": r["metric"].get("pod")}
+        {"pod": pod_to_deployment(r["metric"].get("pod"))}
         for r in crashes
     ]
 
@@ -116,7 +126,7 @@ def get_k8s_events():
     )
     return [
         {
-            "pod":      r["metric"].get("pod"),
+            "pod":      pod_to_deployment(r["metric"].get("pod")),
             "restarts": int(float(r["value"][1]))
         }
         for r in events

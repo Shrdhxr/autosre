@@ -1,0 +1,6 @@
+{"scenario": "01-pod-kill.yaml", "targets": ["cartservice", "paymentservice"], "detected": [], "remediated": [], "timestamp": "2026-08-23T11:58:04.247866", "result": "FAIL"}
+{"scenario": "02-pod-failure.yaml", "targets": ["checkoutservice", "frontend"], "detected": ["checkoutservice", "frontend"], "remediated": [], "timestamp": "2026-08-23T12:00:24.652104", "result": "PASS"}
+{"scenario": "03-network-latency.yaml", "targets": ["productcatalogservice", "recommendationservice"], "detected": ["productcatalogservice", "recommendationservice"], "remediated": ["productcatalogservice", "recommendationservice"], "timestamp": "2026-08-23T12:02:45.149220", "result": "PASS"}
+{"scenario": "04-cpu-stress.yaml", "targets": ["currencyservice", "adservice"], "detected": [], "remediated": [], "timestamp": "2026-08-23T12:05:05.670290", "result": "FAIL"}
+{"scenario": "05-memory-stress.yaml", "targets": ["emailservice", "shippingservice"], "detected": [], "remediated": [], "timestamp": "2026-08-23T12:07:26.078984", "result": "FAIL"}
+{"scenario": "06-network-partition.yaml", "targets": ["redis-cart"], "detected": ["redis-cart"], "remediated": ["redis-cart"], "timestamp": "2026-08-23T12:09:16.464574", "result": "PASS"}
