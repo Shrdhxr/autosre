@@ -208,6 +208,26 @@ def on_incident_created(spec, status, namespace, name, patch, logger, retry, **k
         patch.status["message"] = f"Exceeded max retries ({MAX_RETRIES}) — circuit breaker triggered"
         logger.error(f"🛑 Circuit breaker: {name} failed {MAX_RETRIES} times, giving up")
         audit_log(name, service, namespace, action, "CIRCUIT_BREAKER", f"Failed {MAX_RETRIES} times")
+
+        try:
+            anomaly_event_for_memory = {
+                "type": spec.get("anomalyType", "UNKNOWN"),
+                "service": service,
+                "message": spec.get("diagnosis", "")
+            }
+            diagnosis_for_memory = {
+                "severity": severity,
+                "probable_cause": spec.get("diagnosis", ""),
+                "human_readable_summary": spec.get("diagnosis", "")
+            }
+            store_incident(
+                anomaly_event_for_memory, diagnosis_for_memory, action,
+                success=False,
+                details=f"Circuit breaker — action failed {MAX_RETRIES} times"
+            )
+        except Exception as e:
+            logger.warning(f"Could not store incident in vector memory: {e}")
+
         publish_remediation_completed(
             service=service, action=action, success=False,
             details=f"Circuit breaker triggered after {MAX_RETRIES} failed attempts"
@@ -242,6 +262,26 @@ def on_incident_created(spec, status, namespace, name, patch, logger, retry, **k
             patch.status["message"] = "Remediation denied by operator (human approval gate)"
             logger.warning(f"🙅 Remediation denied by human for {name}")
             audit_log(name, service, namespace, action, "DENIED", "Human denied via approval gate")
+
+            try:
+                anomaly_event_for_memory = {
+                    "type": spec.get("anomalyType", "UNKNOWN"),
+                    "service": service,
+                    "message": spec.get("diagnosis", "")
+                }
+                diagnosis_for_memory = {
+                    "severity": severity,
+                    "probable_cause": spec.get("diagnosis", ""),
+                    "human_readable_summary": spec.get("diagnosis", "")
+                }
+                store_incident(
+                    anomaly_event_for_memory, diagnosis_for_memory, action,
+                    success=False,
+                    details="Denied by human approval gate"
+                )
+            except Exception as e:
+                logger.warning(f"Could not store incident in vector memory: {e}")
+
             publish_remediation_completed(
                 service=service, action=action, success=False,
                 details="Denied by human approval gate"
@@ -280,7 +320,7 @@ def on_incident_created(spec, status, namespace, name, patch, logger, retry, **k
             store_incident(anomaly_event_for_memory, diagnosis_for_memory, action, success=True, details=message)
         except Exception as e:
             logger.warning(f"Could not store incident in vector memory: {e}")
-            
+
     else:
         patch.status["phase"] = "Retrying"
         patch.status["message"] = f"Attempt {retry + 1} failed: {message}"
