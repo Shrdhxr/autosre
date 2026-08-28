@@ -7,6 +7,9 @@ import os
 import time
 from datetime import datetime, timedelta
 
+sys.path.append(os.path.join(os.path.dirname(__file__), "..", "agent"))
+from vector_memory import store_incident
+
 # ── Human Approval Gate ──────────────────────────────────────────
 # "manual" = pause and ask before every action
 # "auto"   = execute immediately, no human gate
@@ -262,6 +265,22 @@ def on_incident_created(spec, status, namespace, name, patch, logger, retry, **k
         mark_remediated(service)
         logger.info(f"✅ {message}")
         audit_log(name, service, namespace, action, "SUCCEEDED", message)
+
+        try:
+            anomaly_event_for_memory = {
+                "type": spec.get("anomalyType", "UNKNOWN"),
+                "service": service,
+                "message": spec.get("diagnosis", "")
+            }
+            diagnosis_for_memory = {
+                "severity": severity,
+                "probable_cause": spec.get("diagnosis", ""),
+                "human_readable_summary": spec.get("diagnosis", "")
+            }
+            store_incident(anomaly_event_for_memory, diagnosis_for_memory, action, success=True, details=message)
+        except Exception as e:
+            logger.warning(f"Could not store incident in vector memory: {e}")
+            
     else:
         patch.status["phase"] = "Retrying"
         patch.status["message"] = f"Attempt {retry + 1} failed: {message}"
