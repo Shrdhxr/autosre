@@ -61,6 +61,8 @@ from datetime import datetime
 import requests
 sys.path.append(os.path.dirname(os.path.abspath(__file__)))
 from incident_creator import create_incident
+sys.path.append(os.path.dirname(os.path.abspath(__file__)))
+from vector_memory import find_similar_incidents
 
 try:
     from jsonschema import validate as _jsonschema_validate
@@ -212,6 +214,24 @@ def _summarize_metrics(metrics, limit=5):
     }
 
 
+def _format_similar_incidents(similar):
+    """Formats retrieved past incidents into readable prompt context."""
+    if not similar:
+        return "  (no similar past incidents found in memory)"
+
+    lines = []
+    for i, inc in enumerate(similar, 1):
+        outcome = "succeeded" if inc.get("success") else "FAILED"
+        lines.append(
+            f"  {i}. [{inc.get('score', 0):.2f} similarity] "
+            f"Service: {inc.get('service', 'unknown')} | "
+            f"Action taken: {inc.get('action', 'unknown')} | "
+            f"Outcome: {outcome}\n"
+            f"     Cause: {inc.get('probable_cause', 'n/a')}"
+        )
+    return "\n".join(lines)
+
+
 def build_diagnosis_prompt(snapshot):
     """Turn a telemetry snapshot (as produced by telemetry_collector.py)
     into a diagnosis prompt with a strict JSON output contract.
@@ -225,6 +245,10 @@ def build_diagnosis_prompt(snapshot):
     k8s_events = snapshot.get("k8s_events") or []
 
     summarized = _summarize_metrics(metrics)
+
+    # Retrieve similar past incidents from vector memory (Sprint 3)
+    similar_incidents = find_similar_incidents(anomaly, top_k=3)
+    similar_incidents_text = _format_similar_incidents(similar_incidents)
 
     error_lines = "\n".join(f"  - {e.get('line', e)}" for e in errors[:10]) or "  (no recent error logs captured)"
     restart_lines = "\n".join(
@@ -274,6 +298,13 @@ Recent error logs (namespace-wide, truncated):
 
 Additional k8s restart events observed: {len(k8s_events)}
 
+SIMILAR PAST INCIDENTS (retrieved from memory, most similar first):
+{similar_incidents_text}
+
+⚠️ IMPORTANT: If the most similar past incident above shows an action that FAILED for
+this same service, you MUST NOT recommend that same action again. Choose a different
+recommended_action and explain in probable_cause why the previous approach likely failed.
+
 TASK:
 Diagnose the most likely root cause of this incident. Respond with ONLY a
 single JSON object — no markdown, no code fences, no commentary — matching
@@ -293,6 +324,7 @@ Guidance for recommended_action:
 - "scale_deployment" — use when the issue is resource saturation (high CPU/memory) under load, not a crash
 - "rollback_deployment" — use when evidence suggests a recent deployment/config change caused the issue
 - "none" — use only if telemetry is too sparse to confidently recommend an action
+- If a similar past incident above shows an action that FAILED, avoid recommending that same action again unless no better alternative exists — explain why in probable_cause instead.
 
 If telemetry is sparse or missing, say so honestly in probable_cause rather
 than inventing details."""
