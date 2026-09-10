@@ -19,3 +19,4 @@ Thumbs.db
 # Editor files
 .vscode/
 .idea/
+qdrant_storage/
