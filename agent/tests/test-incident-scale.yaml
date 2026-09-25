@@ -1,0 +1,14 @@
+apiVersion: autosre.io/v1
+kind: AutoSREIncident
+metadata:
+  name: test-incident-003
+  namespace: default
+spec:
+  service: loadgenerator
+  anomalyType: HIGH_CPU
+  severity: MEDIUM
+  diagnosis: "Test scale_deployment remediation"
+  recommendedAction: scale_deployment
+  confidence: 0.9
+status:
+  phase: Pending

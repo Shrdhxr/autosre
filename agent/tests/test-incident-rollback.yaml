@@ -1,0 +1,14 @@
+apiVersion: autosre.io/v1
+kind: AutoSREIncident
+metadata:
+  name: test-incident-004
+  namespace: default
+spec:
+  service: loadgenerator
+  anomalyType: CRASH_LOOP
+  severity: CRITICAL
+  diagnosis: "Test rollback_deployment remediation - bad image deployed"
+  recommendedAction: rollback_deployment
+  confidence: 0.95
+status:
+  phase: Pending

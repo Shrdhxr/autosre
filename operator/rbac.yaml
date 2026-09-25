@@ -1,0 +1,86 @@
+# The "identity" - who the operator is
+apiVersion: v1
+kind: ServiceAccount
+metadata:
+  name: autosre-operator
+  namespace: default
+
+---
+# The "permissions" - what actions are allowed
+apiVersion: rbac.authorization.k8s.io/v1
+kind: Role
+metadata:
+  name: autosre-operator-role
+  namespace: default
+rules:
+  # Full access to our own custom AutoSREIncident objects
+  - apiGroups: ["autosre.io"]
+    resources: ["autosreincidents"]
+    verbs: ["get", "list", "watch", "update", "patch"]
+
+  # Full access to the status subresource specifically
+  - apiGroups: ["autosre.io"]
+    resources: ["autosreincidents/status"]
+    verbs: ["get", "update", "patch"]
+
+  # Ability to read and modify Deployments (for restart/scale/rollback)
+  - apiGroups: ["apps"]
+    resources: ["deployments"]
+    verbs: ["get", "list", "watch", "patch", "update"]
+
+  # Ability to read and modify ReplicaSets (rollback needs this internally)
+  - apiGroups: ["apps"]
+    resources: ["replicasets"]
+    verbs: ["get", "list", "watch"]
+
+  # Ability to read Pods (to verify remediation worked)
+  - apiGroups: [""]
+    resources: ["pods"]
+    verbs: ["get", "list", "watch"]
+
+  # Kopf needs this to emit Kubernetes Events (visible in kubectl describe)
+  - apiGroups: [""]
+    resources: ["events"]
+    verbs: ["create", "patch"]
+
+---
+# The "connection" - binds the ServiceAccount to the Role
+apiVersion: rbac.authorization.k8s.io/v1
+kind: RoleBinding
+metadata:
+  name: autosre-operator-binding
+  namespace: default
+subjects:
+  - kind: ServiceAccount
+    name: autosre-operator
+    namespace: default
+roleRef:
+  kind: Role
+  name: autosre-operator-role
+  apiGroup: rbac.authorization.k8s.io
+
+---
+# kopf also needs cluster-wide permission to watch CRDs themselves
+# (not the incidents, but the CRD definition status)
+apiVersion: rbac.authorization.k8s.io/v1
+kind: ClusterRole
+metadata:
+  name: autosre-operator-cluster-role
+rules:
+  - apiGroups: ["apiextensions.k8s.io"]
+    resources: ["customresourcedefinitions"]
+    verbs: ["get", "list", "watch"]
+
+---
+apiVersion: rbac.authorization.k8s.io/v1
+kind: ClusterRoleBinding
+metadata:
+  name: autosre-operator-cluster-binding
+subjects:
+  - kind: ServiceAccount
+    name: autosre-operator
+    namespace: default
+roleRef:
+  kind: ClusterRole
+  name: autosre-operator-cluster-role
+  apiGroup: rbac.authorization.k8s.io

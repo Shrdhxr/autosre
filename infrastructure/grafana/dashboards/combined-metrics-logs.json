@@ -1,0 +1,77 @@
+{
+    "annotations": {
+        "list": []
+    },
+    "editable": true,
+    "panels": [
+        {
+            "title": "System-Wide HTTP 5xx Spikes",
+            "type": "timeseries",
+            "gridPos": {
+                "h": 8,
+                "w": 12,
+                "x": 0,
+                "y": 0
+            },
+            "targets": [
+                {
+                    "datasource": {
+                        "type": "prometheus"
+                    },
+                    "expr": "sum(rate(http_requests_total{status=~\"5..\"}[1m])) by (pod)",
+                    "refId": "A"
+                }
+            ]
+        },
+        {
+            "title": "Pod Memory Usage (OOM Watch)",
+            "type": "timeseries",
+            "gridPos": {
+                "h": 8,
+                "w": 12,
+                "x": 12,
+                "y": 0
+            },
+            "targets": [
+                {
+                    "datasource": {
+                        "type": "prometheus"
+                    },
+                    "expr": "sum(container_memory_working_set_bytes{container!=\"\"}) by (pod)",
+                    "refId": "A"
+                }
+            ],
+            "fieldConfig": {
+                "defaults": {
+                    "unit": "bytes"
+                }
+            }
+        },
+        {
+            "title": "Live Loki Error & Critical Logs",
+            "type": "logs",
+            "gridPos": {
+                "h": 10,
+                "w": 24,
+                "x": 0,
+                "y": 8
+            },
+            "targets": [
+                {
+                    "datasource": {
+                        "type": "loki"
+                    },
+                    "expr": "{namespace=\"default\"} |~ \"(?i)(error|exception|critical|fatal|oomkilled|panic)\"",
+                    "refId": "A"
+                }
+            ]
+        }
+    ],
+    "refresh": "5s",
+    "schemaVersion": 38,
+    "title": "Combined Metrics + Logs View",
+    "time": {
+        "from": "now-1h",
+        "to": "now"
+    }
+}

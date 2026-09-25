@@ -1,0 +1,110 @@
+{
+    "annotations": {
+        "list": []
+    },
+    "editable": true,
+    "panels": [
+        {
+            "title": "Service 5xx Error Rate",
+            "type": "timeseries",
+            "gridPos": {
+                "h": 8,
+                "w": 12,
+                "x": 0,
+                "y": 0
+            },
+            "targets": [
+                {
+                    "datasource": {
+                        "type": "prometheus"
+                    },
+                    "expr": "sum(rate(http_requests_total{pod=~\"$service.*\", status=~\"5..\"}[2m])) by (pod)",
+                    "refId": "A"
+                }
+            ]
+        },
+        {
+            "title": "Service Request Rate (RPS)",
+            "type": "timeseries",
+            "gridPos": {
+                "h": 8,
+                "w": 12,
+                "x": 12,
+                "y": 0
+            },
+            "targets": [
+                {
+                    "datasource": {
+                        "type": "prometheus"
+                    },
+                    "expr": "sum(rate(http_requests_total{pod=~\"$service.*\"}[2m])) by (pod)",
+                    "refId": "A"
+                }
+            ]
+        },
+        {
+            "title": "Pod CPU Usage",
+            "type": "timeseries",
+            "gridPos": {
+                "h": 8,
+                "w": 12,
+                "x": 0,
+                "y": 8
+            },
+            "targets": [
+                {
+                    "datasource": {
+                        "type": "prometheus"
+                    },
+                    "expr": "sum(rate(container_cpu_usage_seconds_total{pod=~\"$service.*\", container!=\"\"}[5m])) by (pod)",
+                    "refId": "A"
+                }
+            ]
+        },
+        {
+            "title": "Pod Memory Usage",
+            "type": "timeseries",
+            "gridPos": {
+                "h": 8,
+                "w": 12,
+                "x": 12,
+                "y": 8
+            },
+            "targets": [
+                {
+                    "datasource": {
+                        "type": "prometheus"
+                    },
+                    "expr": "sum(container_memory_working_set_bytes{pod=~\"$service.*\", container!=\"\"}) by (pod)",
+                    "refId": "A"
+                }
+            ],
+            "fieldConfig": {
+                "defaults": {
+                    "unit": "bytes"
+                }
+            }
+        }
+    ],
+    "refresh": "5s",
+    "schemaVersion": 38,
+    "templating": {
+        "list": [
+            {
+                "name": "service",
+                "type": "query",
+                "datasource": {
+                    "type": "prometheus"
+                },
+                "definition": "label_values(kube_pod_info{namespace=\"default\"}, pod)",
+                "query": "label_values(kube_pod_info{namespace=\"default\"}, pod)",
+                "refresh": 1
+            }
+        ]
+    },
+    "title": "Per-Service Health",
+    "time": {
+        "from": "now-1h",
+        "to": "now"
+    }
+}

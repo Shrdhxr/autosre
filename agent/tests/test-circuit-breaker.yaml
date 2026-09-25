@@ -1,0 +1,14 @@
+apiVersion: autosre.io/v1
+kind: AutoSREIncident
+metadata:
+  name: test-cb-memory
+  namespace: default
+spec:
+  service: crasher
+  anomalyType: CRASH_LOOP
+  severity: CRITICAL
+  diagnosis: "Testing failure memory storage via circuit breaker"
+  recommendedAction: restart_pod
+  confidence: 0.85
+status:
+  phase: Pending

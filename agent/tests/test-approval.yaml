@@ -1,0 +1,14 @@
+apiVersion: autosre.io/v1
+kind: AutoSREIncident
+metadata:
+  name: test-approval-001
+  namespace: default
+spec:
+  service: loadgenerator
+  anomalyType: CRASH_LOOP
+  severity: CRITICAL
+  diagnosis: "Testing the human approval gate"
+  recommendedAction: restart_pod
+  confidence: 0.9
+status:
+  phase: Pending
